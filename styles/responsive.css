@@ -1,0 +1,26 @@
+/* Tablet */
+@media (min-width: 768px) {
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    nav ul {
+        display: flex;
+        gap: 1rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+
+    .dashboard-cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    body {
+        max-width: 1200px;
+        margin: auto;
+    }
+}
