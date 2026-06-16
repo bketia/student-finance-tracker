@@ -1,6 +1,22 @@
 import { patterns, duplicateWords } from "./validators.js";
-
+import { transactions } from "./state.js";
+import {
+    renderTransactions,
+    renderDashboard
+} from "./ui.js";
+import { saveTransactions, loadTransactions } from "./storage.js";
 const form = document.getElementById("transaction-form");
+const budgetInput =
+    document.getElementById("budget-cap");
+
+budgetInput.addEventListener("input", () => {
+    renderDashboard();
+});
+
+const savedTransactions = loadTransactions();
+transactions.push(...savedTransactions);
+renderTransactions();
+renderDashboard();
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -37,5 +53,19 @@ form.addEventListener("submit", (e) => {
         return;
     }
 
-    alert("Transaction is valid ✅");
+    const transaction = {
+    id: Date.now(),
+    description,
+    amount: parseFloat(amount),
+    category,
+    date,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+};
+
+transactions.push(transaction);
+saveTransactions(transactions);
+renderTransactions();
+renderDashboard();
+form.reset();
 });
