@@ -1,16 +1,30 @@
 import { transactions } from "./state.js";
 import { saveTransactions } from "./storage.js";
+let currentRegex = null;
 
 export function renderTransactions() {
     const tbody = document.getElementById("transactions-body");
 
     tbody.innerHTML = "";
 
-    transactions.forEach((transaction, index) => {
+    transactions
+    .filter(transaction => {
+
+        if (!currentRegex) {
+            return true;
+        }
+
+        currentRegex.lastIndex = 0;
+
+        return currentRegex.test(
+            transaction.description
+        );
+    })
+    .forEach((transaction, index) => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
-            <td>${transaction.description}</td>
+            <td>${highlightText(transaction.description)}</td>
             <td>${transaction.amount}</td>
             <td>${transaction.category}</td>
             <td>${transaction.date}</td>
@@ -124,5 +138,25 @@ export function renderDashboard() {
     } else {
 
         budgetStatus.textContent = "";
+    }
+    
+}
+export function setSearchRegex(regex) {
+    currentRegex = regex;
+}
+
+function highlightText(text) {
+
+    if (!currentRegex) {
+        return text;
+    }
+
+    try {
+        return text.replace(
+            currentRegex,
+            match => `<mark>${match}</mark>`
+        );
+    } catch {
+        return text;
     }
 }

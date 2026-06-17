@@ -1,8 +1,10 @@
 import { patterns, duplicateWords } from "./validators.js";
 import { transactions } from "./state.js";
+import { compileRegex } from "./search.js";
 import {
     renderTransactions,
-    renderDashboard
+    renderDashboard,
+    setSearchRegex
 } from "./ui.js";
 import { saveTransactions, loadTransactions } from "./storage.js";
 const form = document.getElementById("transaction-form");
@@ -68,4 +70,57 @@ saveTransactions(transactions);
 renderTransactions();
 renderDashboard();
 form.reset();
+});
+const searchInput =
+    document.getElementById("search");
+
+const caseToggle =
+    document.getElementById("case-insensitive");
+
+function updateSearch() {
+
+    const regex = compileRegex(
+        searchInput.value,
+        caseToggle.checked
+    );
+
+    setSearchRegex(regex);
+
+    renderTransactions();
+}
+
+searchInput.addEventListener(
+    "input",
+    updateSearch
+);
+
+caseToggle.addEventListener(
+    "change",
+    updateSearch
+);
+const exportButton =
+    document.getElementById("export-json");
+
+exportButton.addEventListener("click", () => {
+
+    const data =
+        JSON.stringify(transactions, null, 2);
+
+    const blob = new Blob(
+        [data],
+        { type: "application/json" }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+    link.download = "transactions.json";
+
+    link.click();
+
+    URL.revokeObjectURL(url);
 });
