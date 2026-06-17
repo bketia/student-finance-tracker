@@ -1,5 +1,6 @@
 import { transactions } from "./state.js";
 import { saveTransactions } from "./storage.js";
+import { setEditIndex } from "./app.js";
 let currentRegex = null;
 
 export function renderTransactions() {
@@ -29,8 +30,12 @@ export function renderTransactions() {
             <td>${transaction.category}</td>
             <td>${transaction.date}</td>
             <td>
+                <button class="edit-btn" data-index="${index}">
+                 Edit
+                </button>
+
                 <button class="delete-btn" data-index="${index}">
-                    Delete
+                  Delete
                 </button>
             </td>
         `;
@@ -59,6 +64,22 @@ export function renderTransactions() {
             renderDashboard();
         });
     });
+    const editButtons = document.querySelectorAll(".edit-btn");
+
+editButtons.forEach(button => {
+    button.addEventListener("click", () => {
+
+        const index = button.dataset.index;
+        const transaction = transactions[index];
+
+        document.getElementById("description").value = transaction.description;
+        document.getElementById("amount").value = transaction.amount;
+        document.getElementById("category").value = transaction.category;
+        document.getElementById("date").value = transaction.date;
+
+        setEditIndex(index);
+    });
+ });
 }
 
 export function renderDashboard() {

@@ -1,12 +1,17 @@
 import { patterns, duplicateWords } from "./validators.js";
 import { transactions } from "./state.js";
 import { compileRegex } from "./search.js";
+
 import {
     renderTransactions,
     renderDashboard,
     setSearchRegex
 } from "./ui.js";
 import { saveTransactions, loadTransactions } from "./storage.js";
+let editIndex = null;
+export function setEditIndex(index) {
+    editIndex = index;
+}
 const form = document.getElementById("transaction-form");
 const budgetInput =
     document.getElementById("budget-cap");
@@ -65,7 +70,18 @@ form.addEventListener("submit", (e) => {
     updatedAt: new Date().toISOString()
 };
 
-transactions.push(transaction);
+if (editIndex !== null && transactions[editIndex]) {
+
+    transactions[editIndex] = {
+        ...transaction,
+        id: transactions[editIndex].id
+    };
+
+    editIndex = null;
+
+} else {
+    transactions.push(transaction);
+}
 saveTransactions(transactions);
 renderTransactions();
 renderDashboard();
@@ -123,4 +139,64 @@ exportButton.addEventListener("click", () => {
     link.click();
 
     URL.revokeObjectURL(url);
+});
+const importInput =
+    document.getElementById("import-json");
+
+importInput.addEventListener("change", (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+
+        try {
+
+            const importedData =
+                JSON.parse(e.target.result);
+
+            if (!Array.isArray(importedData)) {
+                throw new Error(
+                    "File must contain an array."
+                );
+            }
+
+            transactions.length = 0;
+
+            importedData.forEach(item => {
+
+                if (
+                    item.id &&
+                    item.description &&
+                    item.amount !== undefined &&
+                    item.category &&
+                    item.date
+                ) {
+                    transactions.push(item);
+                }
+            });
+
+            saveTransactions(transactions);
+
+            renderTransactions();
+            renderDashboard();
+
+            alert(
+                "Transactions imported successfully! ✅"
+            );
+
+        } catch (error) {
+
+            alert(
+                "Invalid JSON file ❌"
+            );
+
+            console.error(error);
+        }
+    };
+
+    reader.readAsText(file);
 });

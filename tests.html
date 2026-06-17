@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Finance Tracker Tests</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+        .pass { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+
+    <h1>Regex & Validation Tests</h1>
+
+    <div id="results"></div>
+
+    <script type="module">
+        import { patterns, duplicateWords } from "./scripts/validators.js";
+
+        const results = document.getElementById("results");
+
+        function test(name, condition) {
+            const div = document.createElement("div");
+            div.className = condition ? "pass" : "fail";
+            div.textContent = `${name}: ${condition ? "PASS" : "FAIL"}`;
+            results.appendChild(div);
+        }
+
+        // -------------------------
+        // REGEX TESTS
+        // -------------------------
+
+        test("Valid amount (10.50)", patterns.amount.test("10.50"));
+        test("Invalid amount (10.999)", !patterns.amount.test("10.999"));
+
+        test("Valid date", patterns.date.test("2025-09-20"));
+        test("Invalid date", !patterns.date.test("20-09-2025"));
+
+        test("Valid category", patterns.category.test("Food"));
+        test("Invalid category", !patterns.category.test("Food123"));
+
+        test("Valid description", patterns.description.test("Coffee"));
+        test("Invalid description (spaces)", !patterns.description.test("  coffee"));
+
+        test("Duplicate words detected", duplicateWords.test("coffee coffee"));
+
+        // -------------------------
+        // EDGE CASES
+        // -------------------------
+
+        test("Empty amount rejected", !patterns.amount.test(""));
+        test("Special characters in category rejected", !patterns.category.test("Food@"));
+
+    </script>
+
+</body>
+</html>
