@@ -86,4 +86,5 @@ Created as a student project demonstrating:
 
 ## Live Demo
 
-https://github.com/bketia/student-finance-tracker
+https://drive.google.com/file/d/1mdHgGMaHwDVO_Et6Ken0xyaKQKYGHZWU/view?usp=sharing
+https://bketia.github.io/student-finance-tracker/ 
